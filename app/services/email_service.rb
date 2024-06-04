@@ -23,7 +23,7 @@ class EmailService
       to = envelope.to&.map(&:mailbox)&.join(", ")
       cc = envelope.cc&.map(&:mailbox)&.join(", ")
       bcc = envelope.bcc&.map(&:mailbox)&.join(", ")
-      {subject: envelope.subject, to: to, cc: cc, bcc: bcc, body: body}
+      {id: msg_id, subject: envelope.subject, to: to, cc: cc, bcc: bcc, body: body}
     end
   end
 
