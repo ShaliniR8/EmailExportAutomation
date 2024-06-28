@@ -1,5 +1,6 @@
 include ActionView::Helpers::SanitizeHelper
 require 'json'
+require 'fileutils'
 
 class EmailService
   def initialize
@@ -19,7 +20,7 @@ class EmailService
     emails = @imap.search(['ALL'])
     emails.map do |msg_id|
       envelope = @imap.fetch(msg_id, "ENVELOPE")[0].attr["ENVELOPE"]
-      body = @imap.fetch(1, "BODY[TEXT]")[0].attr["BODY[TEXT]"]
+      body = @imap.fetch(msg_id, "BODY[TEXT]")[0].attr["BODY[TEXT]"]
       to = envelope.to&.map(&:mailbox)&.join(", ")
       cc = envelope.cc&.map(&:mailbox)&.join(", ")
       bcc = envelope.bcc&.map(&:mailbox)&.join(", ")
@@ -31,7 +32,8 @@ class EmailService
     path = "#{Rails.root}/Exports"
     emails = fetch_emails(sub_folder)
     json = {Date.today => emails}
-    export_path = File.join(path, "#{sub_folder}_#{Date.today.to_s}.json")
+    full_path = FileUtils.mkdir_p File.join(path, Date.today.to_s).first
+    export_path = File.join(full_path, "#{sub_folder}.json")
     File.open(export_path, 'wb') do |file|
       file << JSON.pretty_generate(json)
     end
