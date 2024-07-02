@@ -32,7 +32,7 @@ class EmailService
     path = "#{Rails.root}/Exports"
     emails = fetch_emails(sub_folder)
     json = {Date.today => emails}
-    full_path = FileUtils.mkdir_p File.join(path, Date.today.to_s).first
+    full_path = (FileUtils.mkdir_p File.join(path, Date.today.to_s)).first
     export_path = File.join(full_path, "#{sub_folder}.json")
     File.open(export_path, 'wb') do |file|
       file << JSON.pretty_generate(json)
